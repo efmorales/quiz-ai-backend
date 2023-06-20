@@ -1,4 +1,7 @@
 const User = require('../models/User');
+const bcrypt = require('bcrypt');
+const jwtHelper = require('../helpers/jwtHelper');
+
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -45,3 +48,69 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.registerUser = async (req, res) => {
+    const {username, email, password} = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User ({
+        username, 
+        email, 
+        password: hashedPassword
+    })
+
+    try {
+        const user = await newUser.save();
+
+        //remove password before sending the user
+        user.password = undefined;
+
+        const token = jwtHelper.signToken(user);
+        res.status(201).json({
+            user,
+            token
+        })
+    } catch (e) {
+        res.status(500).json({
+            message: e.message,
+        })
+    }
+}
+
+exports.loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({
+            email
+        })
+
+        if (!user) {
+            return res.status(401).json({
+                message: 'Email does not exist',
+            })
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: 'Invalid Password',
+            })
+        }
+
+        //remove password before sending the user
+        user.password = undefined;
+
+        const token = jwtHelper.signToken(user);
+        res.status(200).json({
+            user,
+            token,
+        })
+    } catch (e) {
+        res.status(500).json({
+            message: e.message,
+        })
+    }
+}
