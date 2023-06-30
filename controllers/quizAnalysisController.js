@@ -13,14 +13,14 @@ exports.analyzeQuizResponses = async (req, res) => {
 
     // Construct the prompt for the OpenAI API
 
-    const quizQuestions = responses.map((response, index) => `${index + 1}.${response.question}`);
-    const quizAnswers = responses.map((response, index)  => `${index + 1}.${response.response}`);
+    const quizQuestions = responses.map((response, index) => `${index + 1}. ${response.question} \n ${response.response}`);
+    // const quizAnswers = responses.map((response, index)  => `${index + 1}. ${response.response}`);
 
     // console.log(quizQuestions);
     // console.log(quizAnswers);
 
     try {
-        const prompt = `The user answered the following questions about their worldview:\n (${quizQuestions}) and answered the following:\n${quizAnswers}\nWhat philosophies might align with this worldview?`; // Construct your prompt based on quiz responses
+        const prompt = `The user answered the following questions about their worldview:\n ${quizQuestions}\n What philosophies might align with this worldview?`; // Construct your prompt based on quiz responses
         const maxTokens = 500; // You can adjust this
 
         console.log(prompt);

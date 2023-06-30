@@ -51,8 +51,18 @@ exports.deleteUser = async (req, res) => {
 
 exports.registerUser = async (req, res) => {
     const {username, email, password} = req.body;
+    const salt = await bcrypt.genSalt(10);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    let foundUser = await User.findOne({email:req.body.email});
+
+    if (foundUser) {
+        throw {
+            status: 409,
+            message: "user exist already"
+        }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User ({
         username, 
