@@ -1,5 +1,6 @@
 const { Configuration, OpenAIApi } = require('openai');
-const Quiz = require('../models/Quiz')
+const Quiz = require('../models/Quiz');
+const User = require('../models/User');
 require('dotenv').config();
 
 const configuration = new Configuration({
@@ -13,21 +14,21 @@ exports.analyzeQuizResponses = async (req, res) => {
 
     // Construct the prompt for the OpenAI API
 
-    const quizQuestions = responses.map((response, index) => `${index + 1}. ${response.question} \n ${response.response}`);
+    const quizQuestions = responses.map((response, index) => `${index + 1}. ${response.question} \n ${response.response} \n`);
     // const quizAnswers = responses.map((response, index)  => `${index + 1}. ${response.response}`);
 
     // console.log(quizQuestions);
     // console.log(quizAnswers);
 
     try {
-        const prompt = `The user answered the following questions about their worldview:\n ${quizQuestions}\n What philosophies might align with this worldview?`; // Construct your prompt based on quiz responses
+        const prompt = `The user answered the following questions about their worldview:\n ${quizQuestions}\n What philosophies might align with this worldview? The format of the response should be in HTML, and each related philosophy should be listed with a url linking to their respective Wikipedia article (https://en.wikipedia.org/wiki/).`; // Construct your prompt based on quiz responses
         const maxTokens = 500; // You can adjust this
 
         console.log(prompt);
 
         const completion = await openai.createChatCompletion({
-            model: 'gpt-3.5-turbo',
-            messages: [{role: "user", content: prompt}],
+            model: 'gpt-4',
+            messages: [{ role: "user", content: prompt }],
             max_tokens: maxTokens,
             temperature: 0.5
         });
@@ -46,6 +47,12 @@ exports.analyzeQuizResponses = async (req, res) => {
 
         // Save the quiz to the database
         await quiz.save();
+
+        // Update the user's quizResults array
+
+        await User.findByIdAndUpdate(userId, {
+            $push: { quizResults: quiz._id },
+        });
 
         res.status(200).json({ analysis });
 

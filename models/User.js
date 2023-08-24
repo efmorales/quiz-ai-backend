@@ -28,8 +28,8 @@ const UserSchema = new Schema({
   ],
   quizResults: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Philosophy'
+      type: Array,
+      default: [],
     }
   ]
 });

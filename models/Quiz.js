@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// analysis is the response from the OpenAI API. It will be referenced to populate the User model's quizResults array.
+
 const QuizSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +16,8 @@ const QuizSchema = new Schema({
         }
     ],
     analysis: {
-        type: String
+        type: String,
+        
     },
     dateTaken: {
         type: Date,
