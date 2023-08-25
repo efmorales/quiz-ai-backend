@@ -21,7 +21,7 @@ exports.analyzeQuizResponses = async (req, res) => {
     // console.log(quizAnswers);
 
     try {
-        const prompt = `The user answered the following questions about their worldview:\n ${quizQuestions}\n What philosophies might align with this worldview? The format of the response should be in HTML, and each related philosophy should be listed with a url linking to their respective Wikipedia article (https://en.wikipedia.org/wiki/).`; // Construct your prompt based on quiz responses
+        const prompt = `The user answered the following questions about their worldview:\n ${quizQuestions}\n What philosophies might align with this worldview? Each related philosophy should be listed with a url linking to their respective Wikipedia article (https://en.wikipedia.org/wiki/) and a brief description. The format of the response should be in HTML.`; // Construct your prompt based on quiz responses
         const maxTokens = 500; // You can adjust this
 
         console.log(prompt);
