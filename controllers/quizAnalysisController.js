@@ -27,7 +27,7 @@ exports.analyzeQuizResponses = async (req, res) => {
         console.log(prompt);
 
         const completion = await openai.createChatCompletion({
-            model: 'gpt-4',
+            model: 'gpt-4-turbo',
             messages: [{ role: "user", content: prompt }],
             max_tokens: maxTokens,
             temperature: 0.5
